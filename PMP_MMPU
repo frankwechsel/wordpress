@@ -1,0 +1,67 @@
+function my_amlbofat_add_fields() {
+	// Don't break if Register Helper is not loaded.
+	if ( ! function_exists( 'pmprorh_add_registration_field' ) ) {
+		return false;
+	}
+
+	// Define the fields.
+	$fields = array();
+	$fields[] = new PMProRH_Field(
+		'pp_category',							// input name, will also be used as meta key
+		'select',							// type of field
+		array(
+			'label'		=> 'Kategorie',		// custom field label
+			'class'		=> 'pp_category',		// custom class
+			'profile'	=> true,			// show in user profile
+			'required'	=> true,			// make this field required
+			'levels'		=> 1,	// only level 1 should have the field			
+			'options' => array(				// <option> elements for select field
+				''		=> '',				// blank option - cannot be selected if this field is required
+				'pp_allrounder'	=> 'ALLROUNDER',		// <option value="pp_allrounder">ALLROUNDER</option>
+				'pp_champion'	=> 'CHAMPION',		// <option value="pp_champion">CHAMPION</option>
+				'pp_finisher'	=> 'FINISHER',	// <option value="pp_finisher">FINISHER</option>
+				'pp_racer'	=> 'RACER',		// <option value="pp_racer">RACER</option>
+				'pp_qualifier'	=> 'QUALIFIER',		// <option value="pp_qualifier">QUALIFIER</option>
+			)
+		)
+	);
+
+	// Add the fields into a new checkout_boxes are of the checkout page.
+	foreach ( $fields as $field ) {
+		pmprorh_add_registration_field(
+			'checkout_boxes',				// location on checkout page
+			$field							// PMProRH_Field object
+		);
+	}
+
+	// That's it. See the PMPro Register Helper readme for more information and examples.
+}
+add_action( 'init', 'my_amlbofat_add_fields' );
+
+// Give user's an extra level based on a Register Helper field.
+function my_amlbofat_save_function( $user_id, $pp_category, $value ) {	
+	// Make sure MMPU is active.
+	if ( ! defined( 'PMPROMMPU_VER' ) ) {
+		return;
+	}
+
+	// Check field and give user level if appropriate.
+	if ( $field_name == 'pp_category' ) {
+		if ( $value == pp_allrounder ) {
+			pmprommpu_addMembershipLevel( 5, $user_id );
+			update_user_meta( $user_id, 'pp_category', 'pp_allrounder' );}
+		elseif ( $value == pp_champion ) {
+			pmprommpu_addMembershipLevel( 6, $user_id );
+			update_user_meta( $user_id, 'pp_category', 'pp_champion' );}
+		elseif ( $value == pp_finisher ) {
+			pmprommpu_addMembershipLevel( 7, $user_id );
+			update_user_meta( $user_id, 'pp_category', 'pp_finisher' );}
+		elseif ( $value == pp_racer ) {
+			pmprommpu_addMembershipLevel( 8, $user_id );
+			update_user_meta( $user_id, 'pp_category', 'pp_racer' );}
+		else {
+			pmprommpu_addMembershipLevel( 9, $user_id );
+			update_user_meta( $user_id, 'pp_category', 'pp_qualifier' );
+		}
+	}
+}
